@@ -1,0 +1,106 @@
+﻿ @*dependency injection*@
+@inject MyCalculator.Classes.CalculatorLogic _calculator
+
+<h3>Calculator</h3>
+
+@page "/"
+
+@code {
+
+    double screenValue = 0;
+    int FirstValue = 0;
+    int SecondValue = 0;
+    bool isFirstValue = true;
+
+    Classes.CalculatorLogic.OperatorType previousOperation = Classes.CalculatorLogic.OperatorType.None;
+
+    void clickNumber(int value)
+    {
+        //set clicked number
+        if (isFirstValue == true)
+        {
+            FirstValue = value;
+            screenValue = value;
+        }
+        else
+        {
+            SecondValue = value;
+            screenValue = value;
+        }
+    }
+
+    void clickOperator(MyCalculator.Classes.CalculatorLogic.OperatorType type)
+    {
+        isFirstValue = false;
+
+        if (type == Classes.CalculatorLogic.OperatorType.Clear || type == Classes.CalculatorLogic.OperatorType.EqualsTo)
+        {
+            if (type == Classes.CalculatorLogic.OperatorType.Clear)
+            {
+                isFirstValue = true;
+
+                screenValue = 0;
+                FirstValue = 0;
+                SecondValue = 0;
+            }
+            else //if clicked equals to
+            { 
+                isFirstValue = true;
+
+                switch (previousOperation)
+                {
+                    case Classes.CalculatorLogic.OperatorType.Add:
+                        screenValue = _calculator.Add(FirstValue,SecondValue);
+                        break;
+
+                    case Classes.CalculatorLogic.OperatorType.Subtract:
+                        screenValue = _calculator.Subtract(FirstValue, SecondValue);
+                        break;
+
+                    case Classes.CalculatorLogic.OperatorType.Multiple:
+                        screenValue = _calculator.Multiply(FirstValue, SecondValue);
+                        break;
+
+                    case Classes.CalculatorLogic.OperatorType.Divide:
+                        screenValue = _calculator.Divide(FirstValue, SecondValue);
+                        break;
+                }
+            }
+        }
+        else
+            previousOperation = type; //store previous operation so that you can use it when the user clicks equal sign
+    }
+}
+
+<div class="calculattor">
+    <div style="padding:10px">
+        <div class="screen">
+            <span>@screenValue</span>
+        </div>
+    </div>
+    <div class="button-section">
+        <button @onclick="@(e => clickOperator(Classes.CalculatorLogic.OperatorType.Add))"> +</button>
+        <button @onclick="@(e => clickOperator(Classes.CalculatorLogic.OperatorType.Subtract))">-</button>
+        <button @onclick="@(e => clickOperator(Classes.CalculatorLogic.OperatorType.Multiple))">*</button>
+        <button @onclick="@(e => clickOperator(Classes.CalculatorLogic.OperatorType.Divide))">/</button>
+    </div>
+    <div class="button-section">
+        <button @onclick="@(e => clickNumber(7))">7</button>
+        <button @onclick="@(e => clickNumber(8))">8</button>
+        <button @onclick="@(e => clickNumber(9))">9</button>
+    </div>
+    <div class="button-section">
+        <button @onclick="@(e => clickNumber(4))">4</button>
+        <button @onclick="@(e => clickNumber(5))">5</button>
+        <button @onclick="@(e => clickNumber(6))">6</button>
+    </div>
+    <div class="button-section">
+        <button @onclick="@(e => clickNumber(1))">1</button>
+        <button @onclick="@(e => clickNumber(2))">2</button>
+        <button @onclick="@(e => clickNumber(3))">3</button>
+    </div>
+    <div class="button-section">
+        <button @onclick="@(e => clickOperator(Classes.CalculatorLogic.OperatorType.EqualsTo))">=</button>
+        <button @onclick="@(e => clickOperator(Classes.CalculatorLogic.OperatorType.Clear))">c</button>
+    </div>
+</div>
